@@ -1,0 +1,10 @@
+# Cargo configuration for the Rust-on-FreeRTOS build.
+#
+# The crate is a staticlib linked by CMake into the C startup code and the
+# FreeRTOS kernel, so Cargo never links an executable.  The target is pinned
+# here for `cargo build`, clippy and rustfmt outside the CMake build as well.
+[build]
+target = "thumbv7em-none-eabihf"
+
+[target.thumbv7em-none-eabihf]
+rustflags = ["-C", "panic=abort"]

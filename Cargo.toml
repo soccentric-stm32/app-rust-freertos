@@ -1,0 +1,38 @@
+# Cargo.toml - Rust demo application on FreeRTOS (RFDEMO), NUCLEO-F767ZI
+# Author: Sandesh Ghimire <sandesh@soccentric.com>
+# SRS:    SRS-RFREERTOS-F767
+
+[package]
+name = "rust-freertos-app"
+version = "0.1.0"        # keep in step with VERSION
+edition = "2021"
+rust-version = "1.99"
+resolver = "3"           # MSRV-aware: pick crate versions that build on the pinned toolchain
+authors = ["Sandesh Ghimire <sandesh@soccentric.com>"]
+license = "MIT"
+publish = false
+
+# RFSAFE-004: staticlib linked into the C startup and FreeRTOS kernel.
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+# critical-section is backed by PRIMASK through cortex-m, so the shared
+# application state is safe without pulling in an RTOS-specific crate.
+cortex-m = { version = "0.7.10", features = ["critical-section-single-core"] }
+critical-section = "1.2.0"
+
+[features]
+# HLT-004: force the health check to fail so rollback can be tested.
+fail-health = []
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+debug = 2
+
+[profile.dev]
+opt-level = 1
+panic = "abort"

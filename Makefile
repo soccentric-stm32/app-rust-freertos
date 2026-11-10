@@ -50,7 +50,7 @@ BOOTCTL    ?= ../bootloader/tools/bootctl.py
 PORT       ?=
 PYTHON     ?= python3
 
-.DEFAULT_GOAL := build
+.DEFAULT_GOAL := help
 
 .PHONY: all build configure clean rebuild lint lint-strict fmt flash erase-all \
         reset debug gdbserver serial probe size image help

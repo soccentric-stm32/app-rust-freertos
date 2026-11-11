@@ -35,13 +35,13 @@ pub struct StatusSnapshot {
 impl StatusSnapshot {
     pub const fn initial() -> Self {
         Self {
-            led1_pattern: crate::hwlink::pattern::HEARTBEAT,
+            led1_pattern: crate::protocol::hwlink::pattern::HEARTBEAT,
             led1_period: 1000,
-            led2_pattern: crate::hwlink::pattern::OFF,
+            led2_pattern: crate::protocol::hwlink::pattern::OFF,
             led2_period: 1000,
-            led3_pattern: crate::hwlink::pattern::OFF,
+            led3_pattern: crate::protocol::hwlink::pattern::OFF,
             led3_period: 1000,
-            health_state: crate::board::HEALTH_NOT_REQUIRED,
+            health_state: crate::platform::board::HEALTH_NOT_REQUIRED,
             fault_active: false,
             health_failed: false,
             task_checks: 0,
@@ -56,14 +56,14 @@ static STATUS: Mutex<Cell<StatusSnapshot>> = Mutex::new(Cell::new(StatusSnapshot
 #[derive(Clone, Copy)]
 pub struct BootInfo {
     pub reset_cause: u32,
-    pub handover: crate::boot::Handover,
+    pub handover: crate::platform::boot::Handover,
 }
 
 impl BootInfo {
     pub const fn initial() -> Self {
         Self {
             reset_cause: 0,
-            handover: crate::boot::Handover::unknown(),
+            handover: crate::platform::boot::Handover::unknown(),
         }
     }
 }
@@ -196,7 +196,7 @@ static STACK_UNUSED: [AtomicU32; TASK_COUNT] = [
 /// is why tasks with a fast loop check in on their own slower cadence.
 pub fn check_in(task: usize) {
     CHECKINS[task].fetch_add(1, Ordering::Relaxed);
-    STACK_UNUSED[task].fetch_min(crate::plat::stack_unused(), Ordering::Relaxed);
+    STACK_UNUSED[task].fetch_min(crate::platform::plat::stack_unused(), Ordering::Relaxed);
 }
 
 /// Return and reset the number of check-ins since the last call.

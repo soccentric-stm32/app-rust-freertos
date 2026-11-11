@@ -11,16 +11,16 @@ use core::cell::UnsafeCell;
 use core::ffi::c_void;
 use core::sync::atomic::{AtomicBool, Ordering};
 
-use crate::boot;
-use crate::build_info;
-use crate::fault;
-use crate::hwlink::frame::{self, FLAG_EVENT, FLAG_RESPONSE, MAX_DECODED, MAX_ENCODED};
-use crate::hwlink::{self, error, led, pattern, ParseError, Request};
-use crate::identity;
-use crate::ipc::{self, ButtonEvent, LedCommand};
-use crate::plat;
+use crate::app::fault;
+use crate::app::identity;
+use crate::app::ipc::{self, ButtonEvent, LedCommand};
+use crate::platform::boot;
+use crate::platform::build_info;
+use crate::platform::plat;
+use crate::protocol::hwlink::frame::{self, FLAG_EVENT, FLAG_RESPONSE, MAX_DECODED, MAX_ENCODED};
+use crate::protocol::hwlink::{self, error, led, pattern, ParseError, Request};
 
-pub use crate::ipc::BootInfo;
+pub use crate::app::ipc::BootInfo;
 
 const FIRMWARE_NAME: &str = "rust-freertos-app";
 const PAYLOAD_MAX: usize = 1024;
@@ -239,7 +239,7 @@ fn reply(request: Request<'_>, seq: u16, out: &mut [u8], info: &BootInfo) -> (Ac
                 if ipc::LED_COMMANDS.try_send(command).is_err() {
                     Some(build_nak(out, seq, error::BUSY, "LED queue full"))
                 } else {
-                    ipc::update_status(|v| crate::led::mirror_set(v, target, p, period_ms));
+                    ipc::update_status(|v| crate::app::led::mirror_set(v, target, p, period_ms));
                     hwlink::ack(out, seq).map(|r| r.len())
                 }
             }
@@ -263,7 +263,7 @@ fn reply(request: Request<'_>, seq: u16, out: &mut [u8], info: &BootInfo) -> (Ac
                 if ipc::LED_COMMANDS.try_send(command).is_err() {
                     Some(build_nak(out, seq, error::BUSY, "LED queue full"))
                 } else {
-                    ipc::update_status(|v| crate::led::mirror_set_all(v, p, period_ms));
+                    ipc::update_status(|v| crate::app::led::mirror_set_all(v, p, period_ms));
                     hwlink::ack(out, seq).map(|r| r.len())
                 }
             }
@@ -393,7 +393,7 @@ fn handle_frame(b: &mut Buffers, len: usize, link: &mut Link, info: &BootInfo) {
 
 #[no_mangle]
 pub extern "C" fn rust_comms_task(_arg: *mut c_void) {
-    let info = crate::ipc::boot_info();
+    let info = crate::app::ipc::boot_info();
     run(info);
 }
 

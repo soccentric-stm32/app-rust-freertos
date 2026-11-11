@@ -137,7 +137,18 @@ add_compile_definitions(
     APP_BUILD_DATE="${APP_BUILD_DATE}"
     APP_BUILD_TIMESTAMP=${APP_BUILD_TIMESTAMP})
 
-include_directories(src include board
+# The C platform layer lives in platform/, grouped by subsystem.  Every
+# directory is on the include path so the sources keep short #include names.
+set(PLATFORM_ROOT "${CMAKE_SOURCE_DIR}/platform")
+set(PLATFORM_INCLUDE_DIRS
+    "${PLATFORM_ROOT}"
+    "${PLATFORM_ROOT}/boot"
+    "${PLATFORM_ROOT}/drivers"
+    "${PLATFORM_ROOT}/fault"
+    "${PLATFORM_ROOT}/log"
+    "${PLATFORM_ROOT}/rtos")
+
+include_directories(include board ${PLATFORM_INCLUDE_DIRS}
     "${CUBE_ROOT}/Drivers/CMSIS/Include"
     "${CUBE_ROOT}/Drivers/CMSIS/Device/ST/STM32F7xx/Include"
     "${CUBE_ROOT}/Drivers/STM32F7xx_HAL_Driver/Inc")
@@ -166,20 +177,20 @@ set(HAL_SOURCES
     "${CUBE_ROOT}/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_iwdg.c")
 
 set(PROJECT_SOURCES
-    src/main.c
-    src/platform.c
-    src/clock.c
-    src/hal_timebase.c
-    src/cache_mpu.c
-    src/crc32.c
-    src/app_fault.c
-    src/app_log.c
-    src/reset_cause.c
-    src/iwdg.c
-    src/handover.c
-    src/flash_confirm.c
-    src/uart3.c
-    src/rtos_hooks.c)
+    platform/main.c
+    platform/platform.c
+    platform/drivers/clock.c
+    platform/drivers/hal_timebase.c
+    platform/drivers/cache_mpu.c
+    platform/drivers/crc32.c
+    platform/fault/app_fault.c
+    platform/log/app_log.c
+    platform/drivers/reset_cause.c
+    platform/drivers/iwdg.c
+    platform/boot/handover.c
+    platform/boot/flash_confirm.c
+    platform/drivers/uart3.c
+    platform/rtos/rtos_hooks.c)
 
 set(DEVICE_SOURCES
     "${CUBE_ROOT}/Drivers/CMSIS/Device/ST/STM32F7xx/Source/Templates/system_stm32f7xx.c"
@@ -202,9 +213,8 @@ set(FREERTOS_SOURCES
 # One output file, so Ninja only calls Cargo when a Rust source, Cargo.toml,
 # build.rs, VERSION or the lock file changes.  The glob is evaluated again
 # by CMake when a file is added or removed.
-file(GLOB RUST_SOURCES CONFIGURE_DEPENDS
-    "${CMAKE_SOURCE_DIR}/src/*.rs"
-    "${CMAKE_SOURCE_DIR}/src/hwlink/*.rs")
+file(GLOB_RECURSE RUST_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_SOURCE_DIR}/src/*.rs")
 
 set(RUST_DEPENDS
     ${RUST_SOURCES}

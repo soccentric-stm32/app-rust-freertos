@@ -5,7 +5,7 @@
  * SRS:     RFCON-004, RFBT-002, RFBT-005, RFRT-004, RFGEN-004
  *
  * The drivers and the bootloader contract stay in C (STM32 HAL and
- * FreeRTOS); the application logic is Rust.  src/plat.rs declares the same
+ * FreeRTOS); the application logic is Rust.  src/platform/plat.rs declares the same
  * functions for Rust; keep the two files in step.  No application logic
  * lives here.
  */

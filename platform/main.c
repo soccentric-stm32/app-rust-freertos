@@ -29,7 +29,7 @@
 #include "reset_cause.h"
 #include "rust_app.h"
 
-/* Implemented in src/platform.c; also exposed to Rust as plat_gpio_init(). */
+/* Implemented in platform/platform.c; also exposed to Rust as plat_gpio_init(). */
 void app_gpio_init(void);
 
 static void startup_fail(const char *where) __attribute__((noreturn));

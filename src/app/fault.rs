@@ -7,7 +7,7 @@
 // assert failures and Rust panics; the panic handler in lib.rs ends in
 // plat::fatal().  Rust only reads and clears the record.
 
-use crate::plat::{self, Fault};
+use crate::platform::plat::{self, Fault};
 
 /// Reason names, in the order of the C demo's app_fault_reason_t.
 const REASONS: [&str; 9] = [

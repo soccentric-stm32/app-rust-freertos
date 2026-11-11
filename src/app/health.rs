@@ -11,11 +11,11 @@
 
 use core::ffi::c_void;
 
-use crate::board;
-use crate::boot::{self, Handover};
-use crate::fault;
-use crate::ipc::{self, LedCommand};
-use crate::plat;
+use crate::app::fault;
+use crate::app::ipc::{self, LedCommand};
+use crate::platform::board;
+use crate::platform::boot::{self, Handover};
+use crate::platform::plat;
 
 const LOOP_MS: u32 = 100;
 const CHECKIN_TIMEOUT_MS: u64 = 2000;
@@ -51,7 +51,7 @@ fn conditions_met(handover: &Handover, counts: &[u32; ipc::TASK_COUNT]) -> bool 
 
 #[no_mangle]
 pub extern "C" fn rust_health_task(_arg: *mut c_void) {
-    let info = crate::ipc::boot_info();
+    let info = crate::app::ipc::boot_info();
     run(info.handover);
 }
 

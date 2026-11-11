@@ -8,9 +8,9 @@
 
 use core::ffi::c_void;
 
-use crate::hwlink::{led, pattern};
-use crate::ipc::{self, ButtonEvent, LedCommand};
-use crate::plat;
+use crate::app::ipc::{self, ButtonEvent, LedCommand};
+use crate::platform::plat;
+use crate::protocol::hwlink::{led, pattern};
 
 const DEFAULT_PERIOD_MS: u16 = 1000;
 const TICK_MS: u32 = 1;
@@ -78,7 +78,7 @@ fn update_status(led1: u8, p1: u16, led2: u8, p2: u16, led3: u8, p3: u16, fault:
 
 #[no_mangle]
 pub extern "C" fn rust_led_task(_arg: *mut c_void) {
-    let initial_fault = crate::ipc::status().fault_active;
+    let initial_fault = crate::app::ipc::status().fault_active;
     run(initial_fault);
 }
 
@@ -129,7 +129,7 @@ pub fn run(initial_fault: bool) {
                     period_ms,
                     force,
                 } => match led {
-                    crate::hwlink::led::LD1 => {
+                    crate::protocol::hwlink::led::LD1 => {
                         let now = plat::now_ms();
                         if p == pattern::CHASE {
                             pattern1 = p;
@@ -149,7 +149,7 @@ pub fn run(initial_fault: bool) {
                             phase1 = now;
                         }
                     }
-                    crate::hwlink::led::LD2 => {
+                    crate::protocol::hwlink::led::LD2 => {
                         let now = plat::now_ms();
                         if p == pattern::CHASE {
                             pattern1 = p;
@@ -169,7 +169,7 @@ pub fn run(initial_fault: bool) {
                             phase2 = now;
                         }
                     }
-                    crate::hwlink::led::LD3 if force => {
+                    crate::protocol::hwlink::led::LD3 if force => {
                         led3_forced = Some((p, period_ms));
                         led3_pattern = p;
                         led3_period = period_ms;

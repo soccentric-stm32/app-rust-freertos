@@ -1,9 +1,9 @@
-// plat.rs - Rust side of the C platform layer (src/platform.h)
+// plat.rs - Rust side of the C platform layer (platform/platform.h)
 //
 // Author: Sandesh Ghimire <sandesh@soccentric.com>
 // SRS:    RFRT-004, RFCON-004
 //
-// Declarations must match src/platform.h.  Every wrapper here is safe: the C
+// Declarations must match platform/platform.h.  Every wrapper here is safe: the C
 // functions take fixed arguments and check their own bounds.  The FreeRTOS
 // kernel and the STM32 drivers stay in C.  Some entries are only part of the
 // platform contract and are not called by the current Rust application.

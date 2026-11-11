@@ -12,7 +12,7 @@
  * no application policy: LEDs, button, UART, watchdog, fault record, time
  * and the CONFIRMED record are the only things exposed.
  *
- * The declarations in src/plat.rs must stay in step with src/platform.h.
+ * The declarations in src/platform/plat.rs must stay in step with platform/platform.h.
  */
 
 #include "stm32f7xx_hal.h"

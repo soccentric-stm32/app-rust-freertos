@@ -39,22 +39,31 @@ staticlib after the C objects into one image.
 ## Project layout
 
 ```
-src/            Rust application (lib.rs, hwlink/, tasks) and the C platform
-                (main.c, platform.c) plus the shared C drivers
-include/        rust_app.h: entry points exported by the Rust staticlib
-board/          NUCLEO-F767ZI pin mapping and FreeRTOS/HAL configuration
-ld/             app.ld: slot at 0x0800C000, no-init fault window, DMA window
-protocol/       Shared HWLINK FlatBuffers schema
-scripts/        build, Docker, image and footprint helpers
-docker/         stm32-dev-rust-freertos image on top of the shared stm32-dev base
-ci/             Jenkins release packaging and version helpers
-docs/           Architecture notes
-CMakeLists.txt  Mixed C/Rust build: HAL, FreeRTOS, Cargo staticlib, ELF/image
-Makefile        build, lint, fmt, flash, debug and serial targets
+src/                Rust application crate (`no_std`, no allocator)
+  app/              FreeRTOS tasks (health, comms, button, LED), IPC and services
+  platform/         Rust FFI surface, board/boot constants, build metadata
+  protocol/         HWLINK COBS/CRC-32 framing and fixed-buffer FlatBuffers codec
+platform/           C platform layer (STM32 HAL and FreeRTOS live outside it)
+  boot/             Bootloader contract, hand-over record, CONFIRMED record
+  drivers/          Clock, USART3, IWDG, cache/MPU, CRC-32, reset cause, timebase
+  fault/            No-init fault record shared with Rust
+  log/              USART6 debug log
+  rtos/             FreeRTOS hooks (assert, stack overflow, malloc failure)
+include/            rust_app.h: entry points exported by the Rust staticlib
+board/              NUCLEO-F767ZI pin mapping and FreeRTOS/HAL configuration
+ld/                 app.ld: slot at 0x0800C000, no-init fault window, DMA window
+protocol/           Shared HWLINK FlatBuffers schema
+scripts/            build, Docker, image and footprint helpers
+docker/             stm32-dev-rust-freertos image on top of the shared stm32-dev base
+ci/                 Jenkins release packaging and version helpers
+docs/               Architecture notes and the build pipeline
+CMakeLists.txt      Mixed C/Rust build: HAL, FreeRTOS, Cargo staticlib, ELF/image
+Makefile            build, lint, fmt, flash, debug and serial targets
 ```
 
 ## Documentation
 
+- [docs/architecture.md](docs/architecture.md) — layers, boot flow and where code goes
 - [protocol/README.md](protocol/README.md) — HWLINK schema and framing
 - [docker/README.md](docker/README.md) — build container and toolchain
 

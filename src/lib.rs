@@ -19,18 +19,9 @@ use core::ffi::c_void;
 #[macro_use]
 mod log;
 
-mod board;
-mod boot;
-mod build_info;
-mod button;
-mod comms;
-mod fault;
-mod health;
-mod hwlink;
-mod identity;
-mod ipc;
-mod led;
-mod plat;
+mod app;
+mod platform;
+mod protocol;
 
 // RFRT-001: Health highest, Comms high, Button and LED normal.  These match
 // the C FreeRTOS demo's task priorities (the stack sizes live in C).
@@ -42,26 +33,26 @@ pub(crate) const PRIO_LED: i32 = 2;
 // Compile-time check that every entry matches FreeRTOS's TaskFunction_t
 // (void (*)(void *)); the functions themselves are exported by their modules.
 const _: [extern "C" fn(*mut c_void); 4] = [
-    health::rust_health_task,
-    comms::rust_comms_task,
-    button::rust_button_task,
-    led::rust_led_task,
+    app::health::rust_health_task,
+    app::comms::rust_comms_task,
+    app::button::rust_button_task,
+    app::led::rust_led_task,
 ];
 
 #[no_mangle]
 pub extern "C" fn rust_startup(reset_cause: u32, slot: u8, trial: u8, trial_count: u8) {
     // RFRT-004: C decoded the hand-over record and captured the reset flags
     // before calling us; keep the same values for the tasks.
-    let handover = if slot == board::SLOT_A || slot == board::SLOT_B {
-        boot::Handover {
+    let handover = if slot == platform::board::SLOT_A || slot == platform::board::SLOT_B {
+        platform::boot::Handover {
             slot,
             trial_state: trial,
             trial_count,
         }
     } else {
-        boot::Handover::unknown()
+        platform::boot::Handover::unknown()
     };
-    ipc::set_boot_info(ipc::BootInfo {
+    app::ipc::set_boot_info(app::ipc::BootInfo {
         reset_cause,
         handover,
     });
@@ -69,33 +60,33 @@ pub extern "C" fn rust_startup(reset_cause: u32, slot: u8, trial: u8, trial_coun
     // RFDBG-001: start-up line on the debug UART.
     log_info!(
         "start v{} {}, slot {} {}, reset {}",
-        build_info::VERSION,
-        build_info::GIT_COMMIT,
+        platform::build_info::VERSION,
+        platform::build_info::GIT_COMMIT,
         match handover.slot {
-            board::SLOT_A => 'A',
-            board::SLOT_B => 'B',
+            platform::board::SLOT_A => 'A',
+            platform::board::SLOT_B => 'B',
             _ => '?',
         },
         match handover.trial_state {
-            board::TRIAL_PENDING => "on trial",
-            board::TRIAL_CONFIRMED => "confirmed",
+            platform::board::TRIAL_PENDING => "on trial",
+            platform::board::TRIAL_CONFIRMED => "confirmed",
             _ => "no hand-over",
         },
-        boot::reset_cause_text(reset_cause)
+        platform::boot::reset_cause_text(reset_cause)
     );
 
     // RFBT-001/002: the vector table must be the image's own table.
-    if plat::vtor() != board::SLOT_BASE {
-        fault::fatal();
+    if platform::plat::vtor() != platform::board::SLOT_BASE {
+        app::fault::fatal();
     }
 
     // LED-005: latch LD3 for the last fault or watchdog reset.
-    let last_fault = fault::last();
-    let initial_fault = last_fault.is_some() || boot::reset_was_watchdog(reset_cause);
+    let last_fault = app::fault::last();
+    let initial_fault = last_fault.is_some() || platform::boot::reset_was_watchdog(reset_cause);
     if last_fault.is_some() {
         log_warn!("last fault recorded before this reset");
     }
-    ipc::update_status(|s| s.fault_active = initial_fault);
+    app::ipc::update_status(|s| s.fault_active = initial_fault);
 }
 
 /// RFDBG-001/RFSAFE-003: a Rust panic becomes one debug line and the C fatal
@@ -123,6 +114,6 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
         len: 0,
     };
     let _ = line.write_fmt(format_args!("panic: {}", info.message()));
-    plat::log(b'E', &line.data[..line.len]);
-    plat::fatal();
+    platform::plat::log(b'E', &line.data[..line.len]);
+    platform::plat::fatal();
 }

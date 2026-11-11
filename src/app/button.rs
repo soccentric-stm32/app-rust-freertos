@@ -11,8 +11,8 @@
 
 use core::ffi::c_void;
 
-use crate::ipc::{self, LedCommand};
-use crate::plat;
+use crate::app::ipc::{self, LedCommand};
+use crate::platform::plat;
 
 const DEBOUNCE_MS: u64 = 30;
 const SHORT_MAX_MS: u64 = 1000;

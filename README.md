@@ -34,8 +34,7 @@ staticlib after the C objects into one image.
 - Reproducible Docker build environment with the pinned Rust toolchain
 
 > Hardware bench validation of this port is still pending. The build, link,
-> boot-contract and image checks run in CI; see [SRS.md](SRS.md) for the
-> requirements and the open bench items.
+> boot-contract and image checks run in CI.
 
 ## Project layout
 
@@ -56,12 +55,8 @@ Makefile        build, lint, fmt, flash, debug and serial targets
 
 ## Documentation
 
-- [SRS.md](SRS.md) — requirements SRS-RFREERTOS-F767
 - [protocol/README.md](protocol/README.md) — HWLINK schema and framing
 - [docker/README.md](docker/README.md) — build container and toolchain
-- [docs/architecture.md](docs/architecture.md) — C/Rust split and task model
-- [bootloader SRS](https://github.com/soccentric-stm32/bootloader/blob/HEAD/SRS.md) — A/B slot and hand-over contract
-- [validation-gui SRS, Appendix A](https://github.com/soccentric-stm32/validation-gui/blob/HEAD/SRS.md#appendix-a--hwlink-protocol) — HWLINK protocol
 
 ## Build and run
 

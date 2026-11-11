@@ -9,7 +9,36 @@ start-up, STM32 HAL drivers, FreeRTOS task creation and bootloader contract;
 all application logic is Rust. A CMake build compiles both and links the Rust
 staticlib after the C objects into one image.
 
-[![The Rust FreeRTOS application starting on the board](https://raw.githubusercontent.com/soccentric-stm32/soccentric-stm32.github.io/main/assets/shots/term-rust-freertos.webp)](https://soccentric-stm32.github.io/#rust-freertos)
+## Debug terminal
+
+The debug log from a reset on a NUCLEO-F767ZI (USART6, 115200 8N1), recorded from the board. [Watch it replay line by line](https://soccentric-stm32.github.io/#rust-freertos) on the project page.
+
+```console
+$ make flash PORT=/dev/ttyACM0
+Activate: ok, device is resetting
+[      0] BOOT I start v0.1.0 d389f50d03e7, reset 0x14000000
+[      5] BOOT I init: clock 216 MHz, PLL locked
+[      9] BOOT I init: HWLINK on USART3, 115200 8N1
+[     14] BOOT I scan: searching for an application
+[    335] BOOT I init: flash dual bank, writes enabled
+[    340] BOOT I slot A: ok, pending
+[    343] BOOT I slot B: ok, confirmed
+[    347] BOOT I sel: slot A on trial, count 0
+[    351] BOOT I listen: 500 ms for a host
+[    855] BOOT I boot slot A, trial 1
+[      1] R-FRT I start v0.1.0 56d66485f7fa, slot A on trial, reset software
+[      1] R-FRT I start v0.1.0 56d66485f7fa, slot A on trial, reset software
+[      1] R-FRT I task 3 Health: watches task check-ins, kicks the watchdog, confirms the slot
+[      1] R-FRT I task 4 Comms: serves HWLINK on USART3: info, identity, button and LED commands
+[      1] R-FRT I task 2 Button: debounces B1, short press cycles the LED pattern, long press resets it
+[      1] R-FRT I task 1 LED: drives LD1-LD3 patterns, LD3 shows health and fault state
+[ ... 17 lines omitted: the same task lines, once a second ... ]
+[   5001] R-FRT I health: passed, CONFIRMED written
+[   5001] R-FRT I task 4 Comms: serves HWLINK on USART3: info, identity, button and LED commands
+[   5001] R-FRT I task 2 Button: debounces B1, short press cycles the LED pattern, long press resets it
+[   5001] R-FRT I task 1 LED: drives LD1-LD3 patterns, LD3 shows health and fault state
+[   6001] R-FRT I task 3 Health: watches task check-ins, kicks the watchdog, confirms the slot
+```
 
 ## Features
 

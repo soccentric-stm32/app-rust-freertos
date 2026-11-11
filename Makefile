@@ -49,7 +49,7 @@ OPENOCD    := openocd -f board/st_nucleo_f7.cfg
 BOOTCTL    ?= $(firstword $(wildcard ../bootloader/tools/bootctl.py ../../bootloader/bootloader/tools/bootctl.py) ../bootloader/tools/bootctl.py)
 BOOT_DIR   ?= $(patsubst %/tools/bootctl.py,%,$(BOOTCTL))
 SIGN_KEY   ?= $(BOOT_DIR)/keys/dev-signing-key.pem
-SECURITY_COUNTER ?= 1
+SECURITY_COUNTER ?= 3
 SIGNED     := $(IMAGE:.img=-signed.img)
 PORT       ?=
 PYTHON     ?= python3

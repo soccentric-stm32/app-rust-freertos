@@ -9,6 +9,8 @@ start-up, STM32 HAL drivers, FreeRTOS task creation and bootloader contract;
 all application logic is Rust. A CMake build compiles both and links the Rust
 staticlib after the C objects into one image.
 
+[![The Rust FreeRTOS application starting on the board](https://raw.githubusercontent.com/soccentric-stm32/soccentric-stm32.github.io/main/assets/shots/term-rust-freertos.webp)](https://soccentric-stm32.github.io/#rust-freertos)
+
 ## Features
 
 - Application logic in Rust (`no_std`, no heap allocator) on the FreeRTOS kernel

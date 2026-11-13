@@ -13,6 +13,11 @@ staticlib after the C objects into one image.
 
 The debug log from a reset on a NUCLEO-F767ZI (USART6, 115200 8N1), recorded from the board. [Watch it replay line by line](https://soccentric-stm32.github.io/#rust-freertos) on the project page.
 
+![Debug terminal output from a reset on a NUCLEO-F767ZI](docs/debug-terminal.svg)
+
+<details>
+<summary>Plain text</summary>
+
 ```console
 $ make flash PORT=/dev/ttyACM0
 Activate: ok, device is resetting
@@ -39,6 +44,8 @@ Activate: ok, device is resetting
 [   5001] R-FRT I task 1 LED: drives LD1-LD3 patterns, LD3 shows health and fault state
 [   6001] R-FRT I task 3 Health: watches task check-ins, kicks the watchdog, confirms the slot
 ```
+
+</details>
 
 ## Features
 
